@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Role;
+use App\Flight;
 use App\student;
 use DB;
 
@@ -16,12 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = DB::table('students')
-                ->join('roles','roles.id','=','students.role' )
-                ->select('students.*','roles.role') 
-                ->get();
                 
-        return view('basic')->with('user',$user);
+        return view('book');
     }
 
     /**
@@ -42,31 +38,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            'image' => 'image|mimes:jpeg,png,jpg|max:1999',
-        ]);
-
-        // Get filename with the extension
-        $filenameWithExt = $request->file('image')->getClientOriginalName();
-        // Get just filename
-        $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-        // Get just ext
-        $extension = $request->file('image')->getClientOriginalExtension();
-        // Filename to store
-        $fileNameToStore= $filename.'_'.time().'.'.$extension;
-        // Upload Image
-        $path = $request->file('image')->storeAs('public/image', $fileNameToStore);
-
-        // return $request;
-        $game = new student;
+        $user = new Flight;
         
-        $game->id = request('title');
-        $game->name = request('publisher');
-        $game->role = request('releasedate');
-        $game->image = $fileNameToStore;
-        $game->save();
-
-        return redirect('index');
+        $user->package = request('package');
+        $user->To = request('to');
+        $user->from = request('from');
+        $user->adults = request('adults');
+        $user->children = request('child');
+        $user->save();
+//return $user;
+        return redirect("/available");
     }
 
     /**
@@ -75,9 +56,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show1()
     {
-        //
+        $user = DB::table('flights')
+                 ->join('availableflights','flights.package','=','availableflights.package' )
+                 ->where('flights.To','availableflights.To')
+                 ->where('flights.from','availableflights.from')
+                 ->select('flights.*','availableflights.*') 
+                ->get();
+             //return $user;
+        return view("availableflight")->with('user',$user);
     }
 
     /**

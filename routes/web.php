@@ -15,5 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/index',  'UserController@index');
-Route::post('/index',  'UserController@store');
+// Route::get('/index',  'UserController@index');
+// Route::post('/index',  'UserController@store');
+Route::get('/book',  'UserController@index');
+Route::post('/book',  'UserController@store');
+Route::get('/available',  'UserController@show1');
+
